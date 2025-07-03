@@ -30,7 +30,12 @@ export default function Home() {
       const res = await fetch("https://countriesnow.space/api/v0.1/countries");
       const data = await res.json();
       console.log("data", data);
-      setCountries(data.data);
+      // setCountries(data.data);
+
+      // Put UK at the top of select box
+      const ukObj = data.data.find((c) => c.country === "United Kingdom");
+      const withoutUk = data.data.filter((c) => c.country !== "United Kingdom");
+      setCountries([ukObj, ...withoutUk]);
     };
     fetchCountries();
   }, []);

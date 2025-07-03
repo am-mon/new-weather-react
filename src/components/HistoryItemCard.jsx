@@ -3,13 +3,19 @@ import { ImBin } from "react-icons/im";
 export default function HistoryItemCard({ item, onDelete }) {
   return (
     <div className="relative text-center shadow bg-white rounded-2xl pt-13 pb-7 px-5">
-      <h3 className="font-semibold text-xl">
+      <button
+        onClick={() => onDelete(item)}
+        className="absolute z-[2] top-3 right-3 bg-gray-500 hover:bg-gray-700 text-white font-semibold p-2 rounded-xl cursor-pointer"
+      >
+        <ImBin className="text-lg" />
+      </button>
+      <h3 className="font-semibold text-xl relative z-[1]">
         {item.city}, {item.country}
       </h3>
       <img
         src={`https://openweathermap.org/img/wn/${item.icon}@4x.png`}
         alt={item.weather_desc}
-        className="mx-auto my-[-40px]"
+        className="mx-auto my-[-40px] relative z-0"
       />
       <p className="text-xl mb-3 capitalize">{item.weather_desc}</p>
       <p>
@@ -33,12 +39,6 @@ export default function HistoryItemCard({ item, onDelete }) {
       <p>
         <b>Sunset:</b> {item.sunset}
       </p>
-      <button
-        onClick={() => onDelete(item)}
-        className="absolute z-[1] top-3 right-3 bg-gray-500 hover:bg-gray-700 text-white font-semibold p-2 rounded-xl cursor-pointer"
-      >
-        <ImBin className="text-lg" />
-      </button>
     </div>
   );
 }
