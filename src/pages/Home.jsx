@@ -126,8 +126,12 @@ export default function Home() {
           humidity: data.main.humidity,
           wind: data.wind.speed,
           localTime: adjustedLocalTime.toLocaleString(),
-          sunrise: new Date(data.sys.sunrise * 1000).toLocaleTimeString(),
-          sunset: new Date(data.sys.sunset * 1000).toLocaleTimeString(),
+          sunrise: new Date(
+            (data.sys.sunrise + data.timezone) * 1000
+          ).toLocaleTimeString(),
+          sunset: new Date(
+            (data.sys.sunset + data.timezone) * 1000
+          ).toLocaleTimeString(),
         };
 
         const updatedHistory = [newHistoryItem, ...history].slice(0, 9); //Set to 9 items
@@ -268,12 +272,14 @@ export default function Home() {
                     <p className="mb-2">
                       <b>Sunrise:</b>{" "}
                       {new Date(
-                        weather.sys.sunrise * 1000
+                        (weather.sys.sunrise + weather.timezone) * 1000
                       ).toLocaleTimeString()}
                     </p>
                     <p className="mb-2">
                       <b>Sunset:</b>{" "}
-                      {new Date(weather.sys.sunset * 1000).toLocaleTimeString()}
+                      {new Date(
+                        (weather.sys.sunset + weather.timezone) * 1000
+                      ).toLocaleTimeString()}
                     </p>
                   </div>
                 </div>
@@ -304,7 +310,7 @@ export default function Home() {
               onClick={handleDeleteAllHistoryItems}
               className="flex items-center justify-center gap-2 mx-auto mt-8 bg-gray-600 hover:bg-gray-800 text-white font-semibold py-3 px-4 rounded-2xl cursor-pointer"
             >
-              <ImBin className="text-lg" /> Clear All Items
+              <ImBin className="text-lg" /> Clear All History
             </button>
           </div>
         </div>
