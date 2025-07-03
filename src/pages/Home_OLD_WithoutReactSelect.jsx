@@ -4,15 +4,13 @@ import { BsExclamationCircle } from "react-icons/bs";
 import HistoryItemCard from "../components/HistoryItemCard";
 import { ImBin } from "react-icons/im";
 import ScrollToTop from "../components/ScrollToTop";
-import Select from "react-select";
 
 export default function Home() {
   const [countries, setCountries] = useState([]);
-  const [selectedCountry, setSelectedCountry] = useState(null);
+  const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedCountryName, setSelectedCountryName] = useState("");
-
   const [cities, setCities] = useState([]);
-  const [selectedCity, setSelectedCity] = useState(null);
+  const [selectedCity, setSelectedCity] = useState("");
 
   const [weather, setWeather] = useState(null);
   const [error, setError] = useState("");
@@ -32,26 +30,20 @@ export default function Home() {
       const res = await fetch("https://countriesnow.space/api/v0.1/countries");
       const data = await res.json();
       console.log("data", data);
+      // setCountries(data.data);
 
       // Put UK at the top of select box
       const ukObj = data.data.find((c) => c.country === "United Kingdom");
       const withoutUk = data.data.filter((c) => c.country !== "United Kingdom");
-      const allCountries = [ukObj, ...withoutUk];
-
-      setCountries(
-        allCountries.map((c) => ({
-          value: c.iso2,
-          label: c.country,
-          cities: c.cities,
-        }))
-      );
+      setCountries([ukObj, ...withoutUk]);
     };
     fetchCountries();
   }, []);
 
-  const handleSelectCountry = (selectedCountry) => {
+  const handleSelectCountry = (e) => {
+    const iso2 = e.target.value;
     setWeather(null);
-    if (!selectedCountry) {
+    if (iso2 === "") {
       setSelectedCountry("");
       setSelectedCountryName("");
       setCities([]);
@@ -61,19 +53,18 @@ export default function Home() {
       return;
     }
 
-    if (selectedCountry) {
-      setSelectedCountry(selectedCountry);
-      setSelectedCountryName(selectedCountry.label);
-      setCities(
-        selectedCountry.cities.map((city) => ({ value: city, label: city }))
-      );
+    const result = countries.find((c) => c.iso2 === iso2);
+    if (result) {
+      setSelectedCountry(iso2);
+      setSelectedCountryName(result.country);
+      setCities(result.cities);
       setSelectedCity("");
       setError("");
     }
   };
 
-  const handleSelectCity = (selectedCity) => {
-    setSelectedCity(selectedCity);
+  const handleSelectCity = (e) => {
+    setSelectedCity(e.target.value);
     setError("");
     setWeather(null);
   };
@@ -86,7 +77,7 @@ export default function Home() {
     }
 
     const api_key = "1baf41538ffb1d7b4b5560b86ccc414b";
-    const countryCodeLower = selectedCountry.value.toLowerCase();
+    const countryCodeLower = selectedCountry.toLowerCase();
 
     try {
       setLoading(true);
@@ -95,7 +86,7 @@ export default function Home() {
 
       const res = await fetch(
         `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(
-          selectedCity.value
+          selectedCity
         )},${countryCodeLower}&appid=${api_key}&units=metric`
       );
 
@@ -118,7 +109,7 @@ export default function Home() {
 
         const newHistoryItem = {
           country: selectedCountryName,
-          city: selectedCity.value,
+          city: selectedCity,
           icon: data.weather?.[0].icon,
           weather_desc: data.weather[0].description,
           temp: data.main.temp,
@@ -163,24 +154,6 @@ export default function Home() {
     localStorage.setItem("weatherSearchHistory", JSON.stringify([]));
   };
 
-  const selectBoxStyles = {
-    control: (base, state) => ({
-      ...base,
-      padding: "0.2rem 1rem",
-      borderRadius: "0.75rem",
-      borderWidth: "2px",
-      outline: "none",
-      boxShadow: "none",
-      fontSize: "1.125rem",
-      fontWeight: "600",
-      borderColor: state.isFocused ? "#3B82F6" : "#9CA3AF",
-      "&:hover": {
-        borderColor: "#3B82F6",
-      },
-      backgroundColor: "white",
-    }),
-  };
-
   return (
     <div className="border-t-8 border-b-8 border-blue-300 min-h-[100vh]">
       <div className="max-w-[1100px] mx-auto px-5 mt-15 mb-18">
@@ -192,25 +165,31 @@ export default function Home() {
             onSubmit={handleSubmit}
             className="flex flex-col md:flex-row flex-wrap justify-between items-center gap-3 md:gap-0"
           >
-            <Select
-              options={countries}
+            <select
               value={selectedCountry}
               onChange={handleSelectCountry}
-              className="w-full md:w-[40%]"
-              isDisabled={loading}
-              placeholder="Select Country"
-              styles={selectBoxStyles}
-            />
+              className="w-full md:w-[40%] px-3 py-2 text-lg font-medium border-2 rounded-xl bg-white border-gray-500 outline-0 focus:border-blue-500"
+            >
+              <option value="">Select Country</option>
+              {countries?.map((c) => (
+                <option key={c.iso2} value={c.iso2}>
+                  {c.country}
+                </option>
+              ))}
+            </select>
 
-            <Select
-              options={cities}
+            <select
               value={selectedCity}
               onChange={handleSelectCity}
-              className="w-full md:w-[40%]"
-              isDisabled={!selectedCountry}
-              placeholder="Select City"
-              styles={selectBoxStyles}
-            />
+              className="w-full md:w-[40%] px-3 py-2 text-lg font-medium border-2 rounded-xl bg-white border-gray-500 outline-0 focus:border-blue-500"
+            >
+              <option value="">Select City</option>
+              {cities?.map((city, index) => (
+                <option key={index} value={city}>
+                  {city}
+                </option>
+              ))}
+            </select>
 
             <button
               type="submit"
@@ -228,9 +207,9 @@ export default function Home() {
         </div>
 
         {loading ? (
-          <div className="text-center">
+          <p className="text-center">
             <Loader />
-          </div>
+          </p>
         ) : (
           <>
             {weather && (
@@ -246,7 +225,7 @@ export default function Home() {
                       {weather.weather[0].description}
                     </p>
                     <h3 className="font-semibold text-xl">
-                      {selectedCity.value}, {selectedCountryName}
+                      {selectedCity}, {selectedCountryName}
                     </h3>
                   </div>
                   <div className="md:border-l-2 md:border-r-2 border-white px-5 md:p-5">
