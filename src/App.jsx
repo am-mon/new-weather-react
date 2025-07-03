@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import ReactGA from "react-ga4";
-import { BrowserRouter, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Home from "./pages/Home";
 
 const TRACKING_ID = "G-FNNRR964C0";
@@ -27,7 +27,10 @@ function App() {
     <>
       <BrowserRouter>
         <AnalyticsTracker />
-        <Home />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="*" element={<Home />} />
+        </Routes>
       </BrowserRouter>
     </>
   );
