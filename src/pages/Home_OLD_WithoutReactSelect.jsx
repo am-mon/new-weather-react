@@ -167,7 +167,7 @@ export default function Home() {
         <div className="bg-blue-100 shadow-sm px-5 py-7 md:p-10 rounded-2xl">
           <form
             onSubmit={handleSubmit}
-            className="flex flex-col md:flex-row flex-wrap justify-between items-center gap-3 md:gap-0"
+            className="flex flex-col md:flex-row flex-wrap justify-between items-center gap-3 md:gap-0 relative z-20"
           >
             <select
               value={selectedCountry}
