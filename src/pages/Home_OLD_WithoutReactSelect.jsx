@@ -76,7 +76,7 @@ export default function Home() {
       return;
     }
 
-    const api_key = "74d93aa7495a965f71c3bf1d9f925d43";
+    const api_key = import.meta.env.VITE_OPENWEATHER_API_KEY;
     const countryCodeLower = selectedCountry.toLowerCase();
 
     try {
