@@ -76,7 +76,7 @@ export default function Home() {
       return;
     }
 
-    const api_key = "1baf41538ffb1d7b4b5560b86ccc414b";
+    const api_key = "74d93aa7495a965f71c3bf1d9f925d43";
     const countryCodeLower = selectedCountry.toLowerCase();
 
     try {
