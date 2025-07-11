@@ -93,15 +93,43 @@ export default function Home() {
 
       await new Promise((resolve) => setTimeout(resolve, 600));
 
-      const res = await fetch(
+      let res;
+      let data;
+      let success = false;
+
+      res = await fetch(
         `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(
           selectedCity.value
         )},${countryCodeLower}&appid=${api_key}&units=metric`
       );
-
-      const data = await res.json();
+      data = await res.json();
 
       if (res.ok) {
+        success = true;
+      } else {
+        res = await fetch(
+          `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(
+            selectedCity.value
+          )}&appid=${api_key}&units=metric`
+        );
+        data = await res.json();
+        if (res.ok) {
+          success = true;
+        } else {
+          res = await fetch(
+            `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(
+              selectedCountryName
+            )}&appid=${api_key}&units=metric`
+          );
+          data = await res.json();
+
+          if (res.ok) {
+            success = true;
+          }
+        }
+      }
+
+      if (success) {
         console.log("weather", data);
         setWeather(data);
         setError(null);
