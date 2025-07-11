@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Loader from "../components/Loader";
 import { BsExclamationCircle } from "react-icons/bs";
 import HistoryItemCard from "../components/HistoryItemCard";
@@ -13,6 +13,8 @@ export default function Home() {
 
   const [cities, setCities] = useState([]);
   const [selectedCity, setSelectedCity] = useState(null);
+
+  const lastFetched = useRef({ country: null, city: null });
 
   const [weather, setWeather] = useState(null);
   const [error, setError] = useState("");
@@ -80,6 +82,17 @@ export default function Home() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (
+      lastFetched.current.country?.toLowerCase().trim() ===
+        selectedCountryName?.toLowerCase().trim() &&
+      lastFetched.current.city?.toLowerCase().trim() ===
+        selectedCity?.value?.toLowerCase().trim()
+    ) {
+      setError("You have just searched the weather for this location.");
+      return;
+    }
+
     if (!selectedCity || !selectedCountry) {
       setError("Please select both country and city.");
       return;
@@ -133,6 +146,11 @@ export default function Home() {
         console.log("weather", data);
         setWeather(data);
         setError(null);
+
+        lastFetched.current = {
+          country: selectedCountryName,
+          city: selectedCity.value,
+        };
 
         // Checking if DST is active in the UK
         const isDST = new Date().getHours() === new Date().getUTCHours() + 1;
@@ -232,6 +250,7 @@ export default function Home() {
               isDisabled={loading}
               placeholder="Select Country"
               styles={selectBoxStyles}
+              isClearable
             />
 
             <Select
@@ -242,6 +261,7 @@ export default function Home() {
               isDisabled={!selectedCountry}
               placeholder="Select City"
               styles={selectBoxStyles}
+              isClearable
             />
 
             <button
@@ -250,6 +270,21 @@ export default function Home() {
             >
               Search
             </button>
+            {weather && (
+              <button
+                onClick={() => {
+                  setSelectedCountry(null);
+                  setSelectedCity(null);
+                  setSelectedCountryName("");
+                  setCities([]);
+                  setWeather(null);
+                  setError("");
+                }}
+                className="mt-6 font-semibold text-blue-500 underline mx-auto cursor-pointer"
+              >
+                Reset Search
+              </button>
+            )}
           </form>
           {error && (
             <p className="text-pink-500 font-medium mt-6 flex gap-2 items-center text-sm md:text-base justify-center">
