@@ -353,31 +353,41 @@ export default function Home() {
         )}
       </div>
 
-      {history.length > 0 && (
-        <div className="bg-slate-200 py-15">
-          <div className="max-w-[1100px] mx-auto px-5">
-            <h2 className="text-gray-600 text-3xl md:text-4xl font-bold text-center mb-10">
-              Search History
-            </h2>
-            <div className="grid md:grid-cols-3 gap-5">
-              {history?.map((item, index) => (
-                <HistoryItemCard
-                  key={index}
-                  item={item}
-                  onDelete={handleDeleteHistoryItem}
-                />
-              ))}
-            </div>
+      <div className="bg-blue-50 py-15">
+        <div className="max-w-[1100px] mx-auto px-5">
+          <h2 className="text-gray-600 text-3xl md:text-4xl font-bold text-center mb-10">
+            Search History
+          </h2>
 
-            <button
-              onClick={handleDeleteAllHistoryItems}
-              className="flex items-center justify-center gap-2 mx-auto mt-8 bg-gray-600 hover:bg-gray-800 text-white font-semibold py-3 px-4 rounded-2xl cursor-pointer"
-            >
-              <ImBin className="text-lg" /> Clear All History
-            </button>
-          </div>
+          {history.length > 0 ? (
+            <>
+              <div className="grid md:grid-cols-3 gap-5">
+                {history?.map((item, index) => (
+                  <HistoryItemCard
+                    key={index}
+                    item={item}
+                    onDelete={handleDeleteHistoryItem}
+                  />
+                ))}
+              </div>
+
+              <button
+                onClick={handleDeleteAllHistoryItems}
+                className="flex items-center justify-center gap-2 mx-auto mt-8 bg-gray-600 hover:bg-gray-800 text-white font-semibold py-3 px-4 rounded-2xl cursor-pointer"
+              >
+                <ImBin className="text-lg" /> Clear All History
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="md:min-h-[25vh] md:min-h-[calc(100vh-660px)] flex flex-col items-center justify-center text-center text-gray-500">
+                <p className="font-semibold">No recent searches.</p>
+                <p className="italic">Your search history will appear here.</p>
+              </div>
+            </>
+          )}
         </div>
-      )}
+      </div>
 
       <p className="my-10 text-center text-gray-500">
         © 2025 Mon. Learned React.
